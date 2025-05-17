@@ -144,7 +144,7 @@ function getRGBFromTailwindColor(tw: any): string {
 
   // Handle common colors with hardcoded RGB values
   const colorMap: Record<string, string> = {
-    "blue-500": "59, 130, 246",
+    "blue-500": "40, 68, 117",
     "red-500": "239, 68, 68",
     "red-700": "185, 28, 28",
     "green-500": "34, 197, 94",

@@ -12,10 +12,10 @@ export default function StickyNoteAnnouncement() {
     }
   }, [])
 
-  const handleDismiss = () => {
+ {/*  const handleDismiss = () => {
     localStorage.setItem("announcementDismissed", "true")
     setIsVisible(false)
-  }
+  } */}
 
   if (!isVisible) return null
 
@@ -70,13 +70,15 @@ export default function StickyNoteAnnouncement() {
         </div>
       </div>
 
-      <button
-        onClick={handleDismiss}
-        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-        aria-label="Close announcement"
-      >
-        <IconX className="w-5 h-5" />
-      </button>
+{/* 
+<button
+  onClick={handleDismiss}
+  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+  aria-label="Close announcement"
+>
+  <IconX className="w-5 h-5" />
+</button>
+*/}
     </div>
   )
 }

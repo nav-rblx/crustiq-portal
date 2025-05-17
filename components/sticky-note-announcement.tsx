@@ -1,84 +1,87 @@
-import { useState, useEffect } from "react"
-import { IconX, IconPin } from "@tabler/icons"
+import { useEffect, useState } from "react"
 
-export default function StickyNoteAnnouncement() {
-  const [isVisible, setIsVisible] = useState(false)
+interface AvatarImageProps {
+  userId: string
+  className?: string
+}
+
+const AvatarImage: React.FC<AvatarImageProps> = ({ userId, className = "" }) => {
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
 
   useEffect(() => {
-    const announcementDismissed = localStorage.getItem("announcementDismissed")
-
-    if (!announcementDismissed) {
-      setIsVisible(true)
+    const fetchAvatar = async () => {
+      try {
+        const response = await fetch(
+          `https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`
+        )
+        const data = await response.json()
+        if (data?.data?.[0]?.imageUrl) {
+          setImageUrl(data.data[0].imageUrl)
+        }
+      } catch (err) {
+        console.error("Failed to fetch avatar image:", err)
+      }
     }
-  }, [])
 
- {/*  const handleDismiss = () => {
-    localStorage.setItem("announcementDismissed", "true")
-    setIsVisible(false)
-  } */}
-
-  if (!isVisible) return null
+    fetchAvatar()
+  }, [userId])
 
   return (
-    <div className="z-0 bg-gray-200 dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-start space-x-4 mb-6 relative">
-      <img
-        src="/favicon-32x32.png"
-        alt="Orbit"
-        className="w-10 h-10 rounded-full bg-primary flex-shrink-0"
-      />
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-1">
-          <IconPin className="w-4 h-4 text-gray-500 dark:text-gray-300" />
-          Planetary
-        </h3>
+    <img
+      src={imageUrl || "/fallback.png"}
+      alt="Roblox Avatar"
+      className={`w-12 h-12 rounded-full border-2 border-white dark:border-gray-800 ${className}`}
+    />
+  )
+}
 
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0"> </p>
-        <div className="text-gray-800 dark:text-gray-300 text-sm space-y-2">
-          <p>
-            👋 <strong>Welcome to Orbit V2.0.4!</strong> — Now with Markdown, Password Resets & More!
-            <br />
-            We're excited to have you on board 🎉
-          </p>
-          <p> </p>
-          <p> </p>
-          <p>
-            🚧 <strong>Note:</strong> Orbit is currently in <em>beta</em>, which means you may encounter the occasional
-            bug or unfinished feature.
-			<br />
-          </p>
-          <p>  </p>
-          <p>
-            🆕 <strong>What's New?</strong>
-          </p>
-		  <p> </p>
-		  <p> <strong>Markdown Support</strong> </p>
-          <p>You can now use <strong>Markdown</strong> in wall posts — perfect for stylised announcements, updates, or formatting information exactly how you want.
-            <br />
-          </p>
-          <p>💡 Try things like:</p>
-          <p>- "**bold text**"</p>
-          <p>- "# Headings"</p>
-		  <p>- "[Links](https://your-url.com)"</p>
-		  <p className="mt-4 font-semibold">🔐 Password Reset</p>
-		  <p>
-		    Locked out? No problem — users can now reset their password securely through the new reset flow.
-		  </p>
-		  <p className="mt-4 font-semibold">🗑️ Post Deletion</p>
-		  <p>
-		    Admins and post authors can now delete wall posts — keeping your group wall clean and relevant.
-		  </p>
+export default function StickyNoteAnnouncement() {
+  return (
+    <div className="z-0 bg-gray-200 dark:bg-gray-800 rounded-xl shadow-sm p-6 flex flex-col space-y-6 mb-6 relative max-w-3xl mx-auto">
+      {/* Header: Avatars + Title */}
+      <div className="flex items-center space-x-4">
+        <div className="flex -space-x-3">
+          <AvatarImage userId="0000" className="z-10" />
+          <AvatarImage userId="1111" className="z-0" />
         </div>
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          <span className="text-2xl" role="img" aria-label="pin">📍</span>
+          Crustiq Ownership
+        </h3>
       </div>
 
-{/* 
-<button
-  onClick={handleDismiss}
-  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-  aria-label="Close announcement"
->
-  <IconX className="w-5 h-5" />
-</button>
-*/}
+      {/* Banner */}
+      <img
+        src="/banner-placeholder.png"
+        alt="Banner"
+        className="w-full h-32 object-cover rounded-lg shadow-md"
+      />
+
+      {/* Content */}
+      <div className="text-gray-900 dark:text-gray-100 text-base space-y-4">
+        <p>
+          👋 <strong>Welcome to Crustiq's Staff Management Portal!</strong>
+        </p>
+        <p>
+          We're excited to have you on board. As a member of our management team, you are given access to this website to utilize a variety of useful tools to help us manage things in relation to staff management. This portal will be used for the following:
+        </p>
+        <ul className="pl-4 space-y-1 text-gray-800 dark:text-gray-300" style={{ listStyleType: 'none' }}>
+          {[
+            "Session Planning",
+            "Activity Tracking",
+            "Inactivity Notice",
+            "Vital Information",
+          ].map((item) => (
+            <li key={item} className="flex items-start gap-2">
+              <span className="font-bold select-none">{">"}</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+        <p>
+          🚧 <strong>Note:</strong> This is currently in <em>Beta</em>, thus you may encounter bugs or unexpected behavior. But if one happens, let us know by contacting support. Thank you and have a great time!
+        </p>
+      </div>
     </div>
   )
 }

@@ -64,3 +64,22 @@ ul[data-type="taskList"] {
 	  }
 	}
   }
+
+  /* Hide scrollbars for all iframes */
+iframe::-webkit-scrollbar {
+  display: none;
+}
+iframe {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+
+/* Hide scrollbars for iframes with the no-scrollbar class */
+iframe.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+iframe.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}

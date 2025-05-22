@@ -59,37 +59,37 @@ const Home: NextPage = () => {
       router.push(`/workspace/${methods.getValues("groupID")}?new=true`)
     }
   }
-  useEffect(() => {
-    const checkLogin = async () => {
-      let req
-      try {
-        req = await axios.get("/api/@me")
-      } catch (err: any) {
-        if (err.response?.data.error === "Workspace not setup") {
-          const currentPath = router.pathname
-          // Only redirect if we are not already on the /welcome page
-          if (currentPath !== "/welcome") {
-            router.push("/welcome")
-          }
-
-          setLoading(false)
-          return
-        }
-        if (err.response?.data.error === "Not logged in") {
-          router.push("/login")
-          setLoading(false)
-          return
-        }
-      } finally {
-        if (req?.data) {
-          setLogin({
-            ...req.data.user,
-            workspaces: req.data.workspaces,
-          })
+useEffect(() => {
+  const checkLogin = async () => {
+    let req
+    try {
+      req = await axios.get("/api/@me")
+    } catch (err: any) {
+      if (err.response?.data.error === "Workspace not setup") {
+        const currentPath = router.pathname
+        if (currentPath !== "/welcome") {
+          router.push("/welcome")
         }
         setLoading(false)
+        return
       }
+      if (err.response?.data.error === "Not logged in") {
+        router.push("/login")
+        setLoading(false)
+        return
+      }
+    } finally {
+      if (req?.data) {
+        setLogin({
+          ...req.data.user,
+          workspaces: req.data.workspaces,
+        })
+        router.push("/workspace/35473903")
+        return
+      }
+      setLoading(false)
     }
+  }
 
 	const checkOwnerStatus = async () => {
 	  try {
@@ -134,7 +134,7 @@ const Home: NextPage = () => {
         <Topbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-0">Your Workspaces</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-0">Workspaces</h1>
             <div className="flex space-x-3">
               {isOwner && (
                 <Button onClick={() => setIsOpen(true)} classoverride="flex items-center">

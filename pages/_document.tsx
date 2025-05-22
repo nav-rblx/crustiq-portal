@@ -7,7 +7,7 @@ export default function Document() {
         {/* CSP Meta tag as a fallback for browsers that don't support CSP HTTP headers */}
         <meta
           httpEquiv="Content-Security-Policy"
-          content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https:; frame-src 'self'; base-uri 'self'; form-action 'self';"
+          content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https:; frame-src 'self' https://docs.google.com; base-uri 'self'; form-action 'self';"
         />
         {/* Prevent MIME type sniffing */}
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />

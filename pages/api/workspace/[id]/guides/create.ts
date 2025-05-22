@@ -26,19 +26,20 @@ export async function handler(
 	const { id } = req.query;
 	if (!id) return res.status(400).json({ success: false, error: 'Missing required fields' });
 	
-	const document = await prisma.document.create({
-		data: {
-			workspaceGroupId: parseInt(id as string),
-			name,
-			ownerId: BigInt(req.session.userid),
-			content,
-			roles: {
-				connect: [
-					...roles.map((role: string) => ({ id: role }))
-				]
-			}
-		}
-	});
+const document = await prisma.document.create({
+    data: {
+        workspaceGroupId: parseInt(id as string),
+        name,
+        ownerId: BigInt(req.session.userid),
+        content,
+        googleDocUrl: req.body.googleDocUrl, // <-- Add this line
+        roles: {
+            connect: [
+                ...roles.map((role: string) => ({ id: role }))
+            ]
+        }
+    }
+});
 	
 	res.status(200).json({ success: true, document: JSON.parse(JSON.stringify(document, (key, value) => (typeof value === 'bigint' ? value.toString() : value))) });
 }

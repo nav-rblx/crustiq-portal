@@ -6,12 +6,13 @@ export function middleware(request: NextRequest) {
 
   response.headers.set(
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https:; frame-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self';"
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https:; frame-src 'self' https://docs.google.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self';"
   );
 
   response.headers.set("X-Content-Type-Options", "nosniff");
 
-  response.headers.set("X-Frame-Options", "SAMEORIGIN");
+  // Removed X-Frame-Options to allow Google Docs embedding
+  // response.headers.set("X-Frame-Options", "SAMEORIGIN");
 
   response.headers.set("X-XSS-Protection", "1; mode=block");
 

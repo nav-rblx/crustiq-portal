@@ -195,6 +195,7 @@ model document {
   updatedAt        DateTime  @updatedAt
   ownerId          BigInt
   workspaceGroupId Int
+  googleDocUrl     String?
   owner            user      @relation(fields: [ownerId], references: [userid])
   workspace        workspace @relation(fields: [workspaceGroupId], references: [groupId])
   roles            role[]

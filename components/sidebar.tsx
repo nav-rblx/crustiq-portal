@@ -341,6 +341,12 @@ const Sidebar: NextPage<SidebarProps> = ({ isCollapsed, setIsCollapsed }) => {
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       Copyright © 2025 Planetary. All rights reserved.
                     </p>
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                      Crustiq Staff Portal modifications, features, and enhancements:
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Copyright © 2025 Crustiq Services. All rights reserved.
+                    </p>
                   </div>
 
                   <div>

@@ -43,10 +43,13 @@ export const getServerSideProps: GetServerSideProps = withPermissionCheckSsr(
 
     try {
       const fetchedGames = await noblox.getGroupGames(Number(id));
-      games = fetchedGames.map((game) => ({
-        name: game.name,
-        id: game.id,
-      }));
+      games = fetchedGames
+        .filter((game: any) => game.rootPlace?.type === "Place")
+        .map((game: any) => ({
+          name: game.name,
+          id: Number(game.rootPlace.id),
+        }))
+        .filter((game) => !isNaN(game.id) && game.id > 0);
     } catch (err) {
       console.error("Failed to fetch games from noblox:", err);
       fallbackToManual = true;
@@ -728,15 +731,15 @@ const Home: pageWithLayout<InferGetServerSidePropsType<GetServerSideProps>> = ({
                         required: {
                           value: true,
                           message:
-                            "Game ID is required when games cannot be fetched",
+                            "Universe ID is required when games cannot be fetched",
                         },
                         pattern: {
                           value: /^[0-9]+$/,
-                          message: "Invalid Game ID format",
+                          message: "Invalid Universe ID format",
                         },
                       })}
-                      label="Game ID"
-                      placeholder="Enter your game ID manually"
+                      label="Universe ID"
+                      placeholder="Enter your universe ID"
                     />
                     {form.formState.errors.gameId && (
                       <p className="mt-1 text-sm text-red-500">

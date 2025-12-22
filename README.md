@@ -77,10 +77,10 @@
       Don't know how to install? –– <a href="https://docs.planetaryapp.us">Visit our documentation!</a>
     </li>
     <li>
-      🐛 Bugs? Need help? –– <a href="https://discord.gg/planetary">Get support and let us know here!</a>
+      🐛 Bugs? Need help? –– <a href="https://feedback.planetaryapp.us/bugs">Get support and let us know here!</a>
     </li>
     <li>
-      ✨ Updates –– <a href="https://changelog.planetaryapp.us/">View our Features and updates!</a>
+      ✨ Updates –– <a href="https://feedback.planetaryapp.us/changelog">View our Features and updates!</a>
     </li>
   </ul>
 

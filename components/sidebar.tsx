@@ -69,9 +69,15 @@ const ChangelogContent: React.FC<{ workspaceId: number }> = ({ workspaceId }) =>
   if (!entries.length) return <p className="text-sm text-zinc-500">No entries found.</p>;
 
   return (
-    <>
+    <div className="space-y-6">
       {entries.map((entry, idx) => (
-        <div key={idx}>
+        <div 
+          key={idx}
+          className={clsx(
+            "pb-6",
+            idx < entries.length - 1 && "border-b border-zinc-200 dark:border-zinc-700"
+          )}
+        >
           <a
             href={entry.link}
             target="_blank"
@@ -80,13 +86,13 @@ const ChangelogContent: React.FC<{ workspaceId: number }> = ({ workspaceId }) =>
           >
             {entry.title}
           </a>
-          <div className="text-xs text-zinc-400">{entry.pubDate}</div>
-          <div className="text-sm text-zinc-700 dark:text-zinc-300">
+          <div className="text-xs text-zinc-400 mt-1 mb-3">{entry.pubDate}</div>
+          <div className="text-sm text-zinc-700 dark:text-zinc-300 prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-headings:my-2">
             <ReactMarkdown>{entry.content}</ReactMarkdown>
           </div>
         </div>
       ))}
-    </>
+    </div>
   );
 };
 
@@ -573,15 +579,21 @@ const Sidebar: NextPage<SidebarProps> = ({ isCollapsed, setIsCollapsed }) => {
                     <IconX className="w-5 h-5 text-zinc-500" />
                   </button>
                 </div>
-                <div className="space-y-4 max-h-96 overflow-y-auto">
+                <div className="space-y-6 max-h-96 overflow-y-auto">
                   {changelog.length === 0 && <p className="text-sm text-zinc-500">Loading...</p>}
                   {changelog.map((entry, idx) => (
-                    <div key={idx}>
+                    <div 
+                      key={idx}
+                      className={clsx(
+                        "pb-6",
+                        idx < changelog.length - 1 && "border-b border-zinc-200 dark:border-zinc-700"
+                      )}
+                    >
                       <a href={entry.link} target="_blank" rel="noopener noreferrer" className="font-semibold text-primary hover:underline">
                         {entry.title}
                       </a>
-                      <div className="text-xs text-zinc-400">{entry.pubDate}</div>
-                      <div className="text-sm text-zinc-700 dark:text-zinc-300">
+                      <div className="text-xs text-zinc-400 mt-1 mb-3">{entry.pubDate}</div>
+                      <div className="text-sm text-zinc-700 dark:text-zinc-300 prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-headings:my-2">
                         <ReactMarkdown>{entry.content}</ReactMarkdown>
                       </div>
                     </div>

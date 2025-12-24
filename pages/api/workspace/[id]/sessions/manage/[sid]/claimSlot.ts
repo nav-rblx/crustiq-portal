@@ -116,22 +116,10 @@ export async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
             },
             data: {
               users: {
-                upsert: {
-                  where: {
-                    userid_sessionid: {
-                      userid: BigInt(req.session.userid),
-                      sessionid: findSession.id,
-                    },
-                  },
-                  update: {
-                    roleID: slotId,
-                    slot: slotNum,
-                  },
-                  create: {
-                    userid: BigInt(req.session.userid),
-                    roleID: slotId,
-                    slot: slotNum,
-                  },
+                create: {
+                  userid: BigInt(req.session.userid),
+                  roleID: slotId,
+                  slot: slotNum,
                 },
               },
             },

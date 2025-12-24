@@ -179,13 +179,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
           });
       }
 
-      await prisma.sessionUser.deleteMany({
-        where: {
-          userid: BigInt(userId),
-          sessionid: sid as string,
-        },
-      });
-
       const result = await prisma.sessionUser.create({
         data: {
           userid: BigInt(userId),

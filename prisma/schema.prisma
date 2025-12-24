@@ -174,7 +174,7 @@ model sessionUser {
   session   Session @relation(fields: [sessionid], references: [id])
   user      user    @relation(fields: [userid], references: [userid])
 
-  @@id([userid, sessionid])
+  @@id([userid, sessionid, roleID, slot])
 }
 
 model Session {

@@ -94,7 +94,20 @@ const Home: pageWithLayout<InferGetServerSidePropsType<GetServerSideProps>> = ({
       color: string;
       id: string;
     }[]
-  >([]);
+  >([
+    {
+      name: "Starting Soon",
+      timeAfter: -15,
+      color: "yellow",
+      id: uuidv4(),
+    },
+    {
+      name: "In Progress",
+      timeAfter: 0,
+      color: "green",
+      id: uuidv4(),
+    },
+  ]);
   const [slots, setSlots] = useState<
     {
       name: string;

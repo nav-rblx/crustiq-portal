@@ -151,13 +151,13 @@ export async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
           
           const localDateStr = sessionDate.toISOString().split('T')[0];
           const timeStr = `${timeHours.toString().padStart(2, '0')}:${timeMinutes.toString().padStart(2, '0')}`;
-          const localDateTime = new Date(localDateStr + 'T' + timeStr + ':00');
+          const parsedDate = new Date(localDateStr + 'T' + timeStr + ':00Z');
           const offsetMinutes = timezoneOffset || 0;
-          const utcSessionDate = new Date(localDateTime.getTime() + (offsetMinutes * 60000));
+          const sessionDateTime = new Date(parsedDate.getTime() + offsetMinutes * 60000);
 
-          if (utcSessionDate >= currentDate && utcSessionDate <= endDate) {
+          if (sessionDateTime >= currentDate && sessionDateTime <= endDate) {
             const sessionData: any = {
-              date: utcSessionDate,
+              date: sessionDateTime,
               sessionTypeId: sessionType.id,
               scheduleId: patternSchedule.id,
               name: name,

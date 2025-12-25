@@ -2,6 +2,36 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/utils/database";
 import { validateApiKey } from "@/utils/api-auth";
 
+function getSessionStatus(session: any) {
+  const now = new Date();
+
+  const statues = session.sessionType.statues || [];
+  let status = "scheduled";
+
+  // Sort statues by timeAfter ascending
+  const sortedStatues = [...statues].sort((a: any, b: any) => a.timeAfter - b.timeAfter);
+
+  for (const s of sortedStatues) {
+    const activateTime = new Date(session.date);
+    activateTime.setMinutes(activateTime.getMinutes() + s.timeAfter);
+
+    if (now >= activateTime) {
+      status = s.name.toLowerCase().replace(/ /g, "-");
+    } else {
+      break; // Stop when the next statue hasn't been reached yet
+    }
+  }
+
+  // Override if session ended or startedAt
+  if (session.ended) return "completed";
+  if (session.startedAt && status !== "started") return "started";
+
+  // If the session date is in the past and no status applied
+  if (now > new Date(session.date) && status === "scheduled") status = "missed";
+
+  return status;
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -62,6 +92,7 @@ export default async function handler(
               name: true,
               gameId: true,
               slots: true,
+              statues: true,
             },
           },
           users: {
@@ -105,13 +136,7 @@ export default async function handler(
           slot: user.slot,
           role: user.roleID,
         })),
-        status: sessionWithDetails!.ended
-          ? "ended"
-          : sessionWithDetails!.startedAt
-          ? "in-progress"
-          : sessionWithDetails!.date < new Date()
-          ? "missed"
-          : "scheduled",
+        status: getSessionStatus(sessionWithDetails!), // <-- fixed
       };
 
       return res.status(200).json({
@@ -209,6 +234,7 @@ export default async function handler(
               name: true,
               gameId: true,
               slots: true,
+              statues: true,
             },
           },
           users: {
@@ -252,13 +278,7 @@ export default async function handler(
           slot: user.slot,
           role: user.roleID,
         })),
-        status: updatedSession!.ended
-          ? "ended"
-          : updatedSession!.startedAt
-          ? "in-progress"
-          : updatedSession!.date < new Date()
-          ? "missed"
-          : "scheduled",
+        status: getSessionStatus(updatedSession!), // <-- fixed
       };
 
       return res.status(200).json({

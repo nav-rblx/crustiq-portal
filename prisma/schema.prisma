@@ -194,6 +194,8 @@ model Session {
   logs          SessionLog[]
   notes         SessionNote[]
   users         sessionUser[]
+  jobId         String        @default("not reserved")
+  isOpen        Boolean       @default(false)
 }
 
 model SessionNote {

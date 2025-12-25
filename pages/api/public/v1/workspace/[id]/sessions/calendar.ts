@@ -2,6 +2,37 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/utils/database";
 import { validateApiKey } from "@/utils/api-auth";
 
+function getSessionStatus(session: any) {
+  const now = new Date();
+
+  const statues = session.sessionType.statues || [];
+  let status = "scheduled";
+
+  // Sort statues by timeAfter ascending
+  const sortedStatues = [...statues].sort((a: any, b: any) => a.timeAfter - b.timeAfter);
+
+  for (const s of sortedStatues) {
+    const activateTime = new Date(session.date);
+    activateTime.setMinutes(activateTime.getMinutes() + s.timeAfter);
+
+    if (now >= activateTime) {
+      // Convert names like "In Progress" -> "in-progress"
+      status = s.name.toLowerCase().replace(/ /g, "-");
+    } else {
+      break; // Stop at future statuses
+    }
+  }
+
+  // If session ended explicitly, override status
+  if (session.ended) return "completed";
+  if (session.startedAt && status !== "started") return "started";
+
+  // If the session date passed and still scheduled
+  if (now > new Date(session.date) && status === "scheduled") status = "missed";
+
+  return status;
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -66,6 +97,7 @@ export default async function handler(
             description: true,
             gameId: true,
             slots: true,
+            statues: true
           },
         },
         users: {
@@ -91,6 +123,11 @@ export default async function handler(
       date: session.date,
       startedAt: session.startedAt,
       ended: session.ended,
+
+      // ✅ Added fields
+      jobId: session.jobId,
+      isOpen: session.isOpen,
+
       type: {
         id: session.sessionType.id,
         description: session.sessionType.description,
@@ -114,18 +151,12 @@ export default async function handler(
         slot: user.slot,
         role: user.roleID,
       })),
-      status: session.ended
-        ? "ended"
-        : session.startedAt
-        ? "in-progress"
-        : session.date < new Date()
-        ? "missed"
-        : "scheduled",
+      status: getSessionStatus(session),
     }));
 
     const sessionsByDate = formattedSessions.reduce(
       (acc: { [key: string]: any[] }, session) => {
-        const dateKey = session.date.toISOString().split("T")[0]; // YYYY-MM-DD format
+        const dateKey = session.date.toISOString().split("T")[0];
         if (!acc[dateKey]) {
           acc[dateKey] = [];
         }

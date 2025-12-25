@@ -238,6 +238,7 @@ const WeeklyCalendar: React.FC<{
   onCreateSession?: () => void;
   selectedDateProp?: Date;
   onSelectedDateChange?: (d: Date) => void;
+  statues?: Map<string, string>;
 }> = ({
   currentWeek,
   sessions,
@@ -250,6 +251,7 @@ const WeeklyCalendar: React.FC<{
   onCreateSession,
   selectedDateProp,
   onSelectedDateChange,
+  statues,
 }) => {
   const { getSessionTypeColor, getRecurringColor, getTextColorForBackground } =
     useSessionColors(workspaceId);
@@ -442,6 +444,11 @@ const WeeklyCalendar: React.FC<{
                             {isConcluded && (
                               <span className="bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400 px-2 py-1 rounded text-xs font-medium">
                                 Concluded
+                              </span>
+                            )}
+                            {!isConcluded && statues && statues.has(session.id) && statues.get(session.id) !== "Open" && (
+                              <span className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-1 rounded text-xs font-medium">
+                                {statues.get(session.id)}
                               </span>
                             )}
                           </div>
@@ -769,23 +776,30 @@ const Home: pageWithLayout<pageProps> = (props) => {
     const getAllStatues = async () => {
       const newStatues = new Map<string, string>();
       for (const session of allSessions) {
-        for (const e of session.sessionType.statues.sort((a: any, b: any) => {
-          const object = JSON.parse(JSON.stringify(a));
-          const object2 = JSON.parse(JSON.stringify(b));
-          return object2.timeAfter - object.timeAfter;
-        })) {
-          const minutes =
-            (new Date().getTime() - new Date(session.date).getTime()) /
-            1000 /
-            60;
-          const slot = JSON.parse(JSON.stringify(e));
-          if (slot.timeAfter < minutes) {
-            newStatues.set(session.id, slot.name);
-            break;
+        const sessionStart = new Date(session.date).getTime();
+        const sessionDuration = session.duration || 30;
+        const sessionEnd = sessionStart + (sessionDuration * 60 * 1000);
+        const now = new Date().getTime();
+        const minutesFromStart = (now - sessionStart) / 1000 / 60;
+        if (now > sessionEnd) {
+          newStatues.set(session.id, "Concluded");
+        } else {
+          let foundStatus = false;
+          for (const e of session.sessionType.statues.sort((a: any, b: any) => {
+            const object = JSON.parse(JSON.stringify(a));
+            const object2 = JSON.parse(JSON.stringify(b));
+            return object2.timeAfter - object.timeAfter;
+          })) {
+            const slot = JSON.parse(JSON.stringify(e));
+            if (minutesFromStart >= slot.timeAfter) {
+              newStatues.set(session.id, slot.name);
+              foundStatus = true;
+              break;
+            }
           }
-        }
-        if (!newStatues.has(session.id)) {
-          newStatues.set(session.id, "Open");
+          if (!foundStatus) {
+            newStatues.set(session.id, "Open");
+          }
         }
       }
       setStatues(newStatues);
@@ -984,6 +998,11 @@ const Home: pageWithLayout<pageProps> = (props) => {
                             {isConcluded && (
                               <span className="bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400 px-2 py-1 rounded text-xs font-medium flex-shrink-0">
                                 Concluded
+                              </span>
+                            )}
+                            {!isConcluded && statues && statues.has(session.id) && statues.get(session.id) !== "Open" && (
+                              <span className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-1 rounded text-xs font-medium flex-shrink-0">
+                                {statues.get(session.id)}
                               </span>
                             )}
                           </div>

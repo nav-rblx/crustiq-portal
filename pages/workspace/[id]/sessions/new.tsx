@@ -94,7 +94,20 @@ const Home: pageWithLayout<InferGetServerSidePropsType<GetServerSideProps>> = ({
       color: string;
       id: string;
     }[]
-  >([]);
+  >([
+    {
+      name: "Starting Soon",
+      timeAfter: -15,
+      color: "yellow",
+      id: uuidv4(),
+    },
+    {
+      name: "In Progress",
+      timeAfter: 0,
+      color: "green",
+      id: uuidv4(),
+    },
+  ]);
   const [slots, setSlots] = useState<
     {
       name: string;
@@ -225,34 +238,26 @@ const Home: pageWithLayout<InferGetServerSidePropsType<GetServerSideProps>> = ({
             .join("\n")}\n\nDo you want to create all requested recurring sessions anyway?`;
 
           setPendingCreation(async () => {
-            const errors = [];
-            for (const timeValue of selectedTimes) {
-              try {
-                const [localHours, localMinutes] = timeValue.split(":").map(Number);
-                await axios.post(
-                  `/api/workspace/${workspace.groupId}/sessions/create-scheduled`,
-                  {
-                    sessionTypeId: createdSessionType.id,
-                    name: form.getValues().name,
-                    type: form.getValues().type,
-                    schedule: {
-                      days: selectedDays,
-                      hours: localHours,
-                      minutes: localMinutes,
-                      frequency: frequency,
-                    },
-                    duration: sessionLength,
-                    timezoneOffset: new Date().getTimezoneOffset(),
-                  }
-                );
-              } catch (err: any) {
-                console.error(`Failed to create session for time ${timeValue}:`, err);
-                errors.push({ time: timeValue, error: err?.response?.data?.error || err.message });
+            const timesArray = selectedTimes.map(timeValue => {
+              const [localHours, localMinutes] = timeValue.split(":").map(Number);
+              return { hours: localHours, minutes: localMinutes };
+            });
+            
+            await axios.post(
+              `/api/workspace/${workspace.groupId}/sessions/create-scheduled`,
+              {
+                sessionTypeId: createdSessionType.id,
+                name: form.getValues().name,
+                type: form.getValues().type,
+                schedule: {
+                  days: selectedDays,
+                  times: timesArray,
+                  frequency: frequency,
+                },
+                duration: sessionLength,
+                timezoneOffset: new Date().getTimezoneOffset(),
               }
-            }
-            if (errors.length > 0) {
-              throw new Error(`Some sessions failed to create: ${errors.map(e => e.time).join(", ")}`);
-            }
+            );
           });
 
           setOverlapError("");
@@ -262,22 +267,23 @@ const Home: pageWithLayout<InferGetServerSidePropsType<GetServerSideProps>> = ({
           return;
         }
 
-        for (const timeValue of selectedTimes) {
+        const timesArray = selectedTimes.map(timeValue => {
           const [localHours, localMinutes] = timeValue.split(":").map(Number);
-          await axios.post(`/api/workspace/${workspace.groupId}/sessions/create-scheduled`, {
-            sessionTypeId: createdSessionType.id,
-            name: form.getValues().name,
-            type: form.getValues().type,
-            schedule: {
-              days: selectedDays,
-              hours: localHours,
-              minutes: localMinutes,
-              frequency: frequency,
-            },
-            duration: sessionLength,
-            timezoneOffset: new Date().getTimezoneOffset(),
-          });
-        }
+          return { hours: localHours, minutes: localMinutes };
+        });
+        
+        await axios.post(`/api/workspace/${workspace.groupId}/sessions/create-scheduled`, {
+          sessionTypeId: createdSessionType.id,
+          name: form.getValues().name,
+          type: form.getValues().type,
+          schedule: {
+            days: selectedDays,
+            times: timesArray,
+            frequency: frequency,
+          },
+          duration: sessionLength,
+          timezoneOffset: new Date().getTimezoneOffset(),
+        });
       }
 
       if (allowUnscheduled && unscheduledDate && unscheduledTime) {

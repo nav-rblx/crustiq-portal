@@ -48,7 +48,8 @@ export async function handler(
 			},
 			sessionType: {
 				select: {
-					name: true
+					name: true,
+					statues: true
 				}
 			}
 		},

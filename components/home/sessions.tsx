@@ -74,6 +74,26 @@ const Sessions: React.FC = () => {
   const goToSessions = () => {
     router.push(`/workspace/${router.query.id}/sessions`);
   };
+  
+  const getCurrentStatus = (session: any) => {
+    const now = new Date();
+    const sessionStart = new Date(session.date);
+    const sessionDuration = session.duration || 30;
+    const sessionEnd = new Date(sessionStart.getTime() + sessionDuration * 60 * 1000);
+    
+    if (now > sessionEnd) return "Concluded";
+    
+    const minutesFromStart = (now.getTime() - sessionStart.getTime()) / 1000 / 60;
+    const statues = (session as any).sessionType?.statues || [];
+    
+    const sortedStatues = [...statues].sort((a: any, b: any) => b.timeAfter - a.timeAfter);
+    for (const status of sortedStatues) {
+      if (minutesFromStart >= status.timeAfter) {
+        return status.name;
+      }
+    }
+    return null;
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -154,6 +174,14 @@ const Sessions: React.FC = () => {
                             session.type.slice(1)}
                         </span>
                       )}
+                      {(() => {
+                        const status = getCurrentStatus(session);
+                        return status && status !== "Open" && status !== "Concluded" && (
+                          <span className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-0.5 rounded text-xs font-medium">
+                            {status}
+                          </span>
+                        );
+                      })()}
                     </div>
                     <p className="text-sm text-zinc-600 dark:text-zinc-400">
                       {session.owner?.username ? `Hosted by ${session.owner.username}` : "No Host"}
@@ -211,6 +239,14 @@ const Sessions: React.FC = () => {
                             nextSession.type.slice(1)}
                         </span>
                       )}
+                      {(() => {
+                        const status = getCurrentStatus(nextSession);
+                        return status && status !== "Open" && status !== "Concluded" && (
+                          <span className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-0.5 rounded text-xs font-medium">
+                            {status}
+                          </span>
+                        );
+                      })()}
                     </div>
                     <p className="text-sm text-zinc-600 dark:text-zinc-400">
                       {new Date(nextSession.date).toLocaleTimeString([], {
